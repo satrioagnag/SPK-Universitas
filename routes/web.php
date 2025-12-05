@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use app\Http\Controllers\AHPController;
+use App\Http\Controllers\AHPController;
 use app\Http\Controllers\AlternativeScoreController;
 use app\Http\Controllers\AlternativeController;
 use app\http\Controllers\CriterionController;

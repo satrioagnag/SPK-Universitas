@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\CriteriaPairwise;
-use App\Models\Criterion;
+use App\Models\criteria_pairwise;
+use App\Models\Criteria;
 use Illuminate\Support\Collection;
 
 class AHPService
@@ -11,7 +11,7 @@ class AHPService
     /**
      * Hitung bobot AHP untuk kumpulan kriteria.
      *
-     * @param \Illuminate\Support\Collection<Criterion> $criteria
+     * @param \Illuminate\Support\Collection<Criteria> $criteria
      * @return array [
      *   'weights' => [criterion_id => weight, ...],
      *   'ci' => float,
@@ -36,7 +36,7 @@ class AHPService
         $matrix = array_fill(0, $n, array_fill(0, $n, 1.0));
 
         // Ambil semua pairwise untuk kriteria ini
-        $pairs = CriteriaPairwise::whereIn('criterion_row_id', $criteria->pluck('id'))
+        $pairs = criteria_pairwise::whereIn('criterion_row_id', $criteria->pluck('id'))
             ->whereIn('criterion_col_id', $criteria->pluck('id'))
             ->get();
 

@@ -19,10 +19,10 @@ class AHPController extends Controller
 
     public function index()
     {
-        $criteria = Criterion::where('is_active', true)->orderBy('code')->get();
+        $criteria = Criteria::where('is_active', true)->orderBy('code')->get();
 
         // Ambil pairwise yang sudah ada
-        $pairs = CriteriaPairwise::all()
+        $pairs = criteria_pairwise::all()
             ->keyBy(fn($p) => $p->criterion_row_id . '_' . $p->criterion_col_id);
 
         return view('ahp.index', compact('criteria', 'pairs'));
@@ -30,7 +30,7 @@ class AHPController extends Controller
 
     public function storeComparisons(Request $request)
     {
-        $criteria = Criterion::where('is_active', true)->orderBy('code')->get();
+        $criteria = Criteria::where('is_active', true)->orderBy('code')->get();
 
         foreach ($criteria as $row) {
             foreach ($criteria as $col) {
@@ -48,7 +48,7 @@ class AHPController extends Controller
 
                 $value = (float) $value;
 
-                CriteriaPairwise::updateOrCreate(
+                criteria_pairwise::updateOrCreate(
                     [
                         'criterion_row_id' => $row->id,
                         'criterion_col_id' => $col->id,
@@ -63,7 +63,7 @@ class AHPController extends Controller
 
     public function calculate()
     {
-        $criteria = Criterion::where('is_active', true)->orderBy('code')->get();
+        $criteria = criteria::where('is_active', true)->orderBy('code')->get();
 
         if ($criteria->isEmpty()) {
             return redirect()->route('ahp.index')->with('error', 'No active criteria.');

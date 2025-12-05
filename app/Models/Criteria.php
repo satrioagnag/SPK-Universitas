@@ -20,21 +20,21 @@ class Criteria extends Model
 
     public function subCriteria()
     {
-        return $this->hasMany(subcriterion::class);
+        return $this->hasMany(sub_criterion::class);
     }
 
     public function scores()
     {
-        return $this->hasMany(AlternatifScore::class);
+        return $this->hasMany(alternatives_score::class);
     }
 
     public function pairWiseRows()
     {
-        return $this->hasMany(CriteriaPairWise::class,'criteria_row_id');
+        return $this->hasMany(criteria_pairwise::class,'criteria_row_id');
     }
 
     public function pairWiseCols()
     {
-        return $this->hasMany(CriteriaPairWise::class,'criteria_col_id');
+        return $this->hasMany(criteria_pairwise::class,'criteria_col_id');
     }
 }

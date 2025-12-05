@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Criterion;
+use App\Models\Criteria;
 use App\Models\Sub_Criterion;
 use Illuminate\Http\Request;
 
@@ -13,7 +13,7 @@ class CriterionController extends Controller
      */
     public function index()
     {
-        $criteria = Criterion::orderBy('code')->get();
+        $criteria = Criteria::orderBy('code')->get();
         return view('criteria.index', compact('criteria'));
     }
 
@@ -37,7 +37,7 @@ class CriterionController extends Controller
             'weight' => 'required|numeric',
         ]);
 
-        Criterion::create($data);
+        Criteria::create($data);
 
         return redirect()
             ->route('criteria.index')
@@ -55,7 +55,7 @@ class CriterionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Criterion $criteria)
+    public function edit(Criteria $criteria)
     {
         return view('criteria.edit', compact('criterion'));
     }
@@ -63,16 +63,16 @@ class CriterionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Criterion $criteria)
+    public function update(Request $request, Criteria $criteria)
     {
         $data = $request->validate([
-            'code' => 'required|max:10|unique:criteria,code,' . $id,
+            'code' => 'required|max:10|unique:criteria,code,' . $criteria->id,
             'name' => 'required|max:255',
             'type' => 'required|in:benefit,cost',
             'weight' => 'required|numeric',
         ]);
 
-        $Criterion->update($data);
+        $criteria->update($data);
 
         return redirect()
             ->route('criteria.index')
@@ -82,12 +82,12 @@ class CriterionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Criterion $criteria)
+    public function destroy(Criteria $criteria)
     {
-        $subCriterion->delete();
+        $criteria->delete();
 
         return redirect()
-            ->route('criteria.index', $criterion->id)
+            ->route('criteria.index', $criteria->id)
             ->with('success', 'Criterion deleted successfully.');
     }
 }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class sub_criteria extends Model
+class sub_criterion extends Model
 {
     /** @use HasFactory<\Database\Factories\SubCriteriaFactory> */
     use HasFactory;
@@ -29,6 +29,6 @@ class sub_criteria extends Model
 
     public function scores()
     {
-        return $this->hasMany(AlternatifScore::class);
+        return $this->hasMany(alternatives_score::class);
     }
 }
