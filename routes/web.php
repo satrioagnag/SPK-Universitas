@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\AHPController;
-use app\Http\Controllers\AlternativeScoreController;
-use app\Http\Controllers\AlternativeController;
-use app\http\Controllers\CriterionController;
+use App\Http\Controllers\AlternativeScoreController;
+use App\Http\Controllers\AlternativeController;
+use App\http\Controllers\CriterionController;
 use App\http\Controllers\DashboardController;
-use app\http\Controllers\SubCriterionController;
-use app\http\Controllers\topsisController;
-use app\http\Controllers\user;
-use app\services\AHPService;
-use app\services\TopsisService;
+use App\http\Controllers\SubCriterionController;
+use App\http\Controllers\topsisController;
+use App\http\Controllers\user;
+use App\services\AHPService;
+use App\services\TopsisService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

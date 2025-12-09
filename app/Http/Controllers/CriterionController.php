@@ -22,7 +22,7 @@ class CriterionController extends Controller
      */
     public function create()
     {
-        return view('criterion.create');
+        return view('criteria.create');
     }
 
     /**
