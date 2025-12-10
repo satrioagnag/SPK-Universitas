@@ -27,44 +27,69 @@
                 Data AHP - TOPSIS
             </div>
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Kriteria</span>
+            <!-- Nav Item - Kriteria -->
+    <li class="nav-item {{ request()->routeIs('criteria.*') || request()->routeIs('ahp.*') ? 'active' : '' }}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseKriteria"
+            aria-expanded="{{ request()->routeIs('criteria.*') || request()->routeIs('ahp.*') ? 'true' : 'false' }}" 
+            aria-controls="collapseKriteria">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>Kriteria</span>
+        </a>
+        <div id="collapseKriteria" class="collapse {{ request()->routeIs('criteria.*') || request()->routeIs('ahp.*') ? 'show' : '' }}" 
+             aria-labelledby="headingKriteria" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Kelola Kriteria:</h6>
+                <a class="collapse-item {{ request()->routeIs('criteria.index') ? 'active' : '' }}" 
+                   href="{{ route('criteria.index') }}">
+                    <i class="fas fa-list fa-sm"></i> Data Kriteria
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href={{route('criteria.index')}}>Data Kriteria</a>
-                        <a class="collapse-item" href="">Data Sub-Kriteria</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Alternatif</span>
+                <a class="collapse-item {{ request()->routeIs('ahp.*') ? 'active' : '' }}" 
+                   href="{{ route('ahp.index') }}">
+                    <i class="fas fa-balance-scale fa-sm"></i> Perbandingan AHP
                 </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{route('alternatives.index')}}">Data Alternatif</a>
-                        <a class="collapse-item" href="utilities-border.html">Data Penilaian</a>
-                        <a class="collapse-item" href="utilities-animation.html">Data Perhitungan</a>
-                    </div>
-                </div>
-            </li>
+            </div>
+        </div>
+    </li>
 
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Data Hasil Akhir</span></a>
-            </li>
+            <!-- Nav Item - Alternatif -->
+    <li class="nav-item {{ request()->routeIs('alternatives.*') ? 'active' : '' }}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAlternatif"
+            aria-expanded="{{ request()->routeIs('alternatives.*') ? 'true' : 'false' }}" 
+            aria-controls="collapseAlternatif">
+            <i class="fas fa-fw fa-university"></i>
+            <span>Alternatif</span>
+        </a>
+        <div id="collapseAlternatif" class="collapse {{ request()->routeIs('alternatives.*') ? 'show' : '' }}" 
+             aria-labelledby="headingAlternatif" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Kelola Alternatif:</h6>
+                <a class="collapse-item {{ request()->routeIs('alternatives.index') || request()->routeIs('alternatives.create') || request()->routeIs('alternatives.edit') ? 'active' : '' }}" 
+                   href="{{ route('alternatives.index') }}">
+                    <i class="fas fa-list fa-sm"></i> Data Alternatif
+                </a>
+                <a class="collapse-item {{ request()->routeIs('alternatives.scores.*') ? 'active' : '' }}" 
+                   href="{{ route('alternatives.index') }}">
+                    <i class="fas fa-star fa-sm"></i> Penilaian
+                </a>
+            </div>
+        </div>
+    </li>
+
+            <!-- Nav Item - TOPSIS -->
+    <li class="nav-item {{ request()->routeIs('topsis.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('topsis.index') }}">
+            <i class="fas fa-fw fa-calculator"></i>
+            <span>Perhitungan TOPSIS</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Hasil Akhir -->
+    <li class="nav-item {{ request()->routeIs('topsis.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('topsis.index') }}">
+            <i class="fas fa-fw fa-trophy"></i>
+            <span>Hasil Perangkingan</span>
+        </a>
+    </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

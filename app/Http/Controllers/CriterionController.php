@@ -3,91 +3,74 @@
 namespace App\Http\Controllers;
 
 use App\Models\Criteria;
-use App\Models\Sub_Criterion;
 use Illuminate\Http\Request;
 
 class CriterionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $criteria = Criteria::orderBy('code')->get();
+        $criteria = Criteria::orderBy('Code')->get();
         return view('criteria.index', compact('criteria'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('criteria.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'code' => 'required|unique:criteria,code|max:10',
+            'code' => 'required|unique:criterias,Code|max:10',
             'name' => 'required|max:255',
             'type' => 'required|in:benefit,cost',
-            'weight' => 'required|numeric',
+            'weight' => 'nullable|numeric',
         ]);
 
-        Criteria::create($data);
+        Criteria::create([
+            'Code' => $data['code'],
+            'Name' => $data['name'],
+            'Type' => $data['type'],
+            'Weight' => $data['weight'] ?? 0,
+        ]);
 
         return redirect()
             ->route('criteria.index')
             ->with('success', 'Criterion created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Criteria $criteria)
     {
-        return view('criteria.edit', compact('criterion'));
+        return view('criteria.edit', compact('criteria'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Criteria $criteria)
     {
         $data = $request->validate([
-            'code' => 'required|max:10|unique:criteria,code,' . $criteria->id,
+            'code' => 'required|max:10|unique:criterias,Code,' . $criteria->id,
             'name' => 'required|max:255',
             'type' => 'required|in:benefit,cost',
-            'weight' => 'required|numeric',
+            'weight' => 'nullable|numeric',
         ]);
 
-        $criteria->update($data);
+        $criteria->update([
+            'Code' => $data['code'],
+            'Name' => $data['name'],
+            'Type' => $data['type'],
+            'Weight' => $data['weight'] ?? $criteria->Weight,
+        ]);
 
         return redirect()
             ->route('criteria.index')
             ->with('success', 'Criterion updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Criteria $criteria)
     {
         $criteria->delete();
 
         return redirect()
-            ->route('criteria.index', $criteria->id)
+            ->route('criteria.index')
             ->with('success', 'Criterion deleted successfully.');
     }
 }

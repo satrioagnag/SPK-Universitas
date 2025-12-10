@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use app\Models\criteria_pairwise;
-use app\Models\Criteria;
-use app\services\AHPService;
+use App\Models\criteria_pairwise;
+use App\Models\Criteria;
+use App\Services\AHPService;
 use Illuminate\Http\Request;
-
 
 class AHPController extends Controller
 {
@@ -19,23 +18,22 @@ class AHPController extends Controller
 
     public function index()
     {
-        $criteria = Criteria::where('is_active', true)->orderBy('code')->get();
+        $criteria = Criteria::orderBy('Code')->get();
 
         // Ambil pairwise yang sudah ada
         $pairs = criteria_pairwise::all()
-            ->keyBy(fn($p) => $p->criterion_row_id . '_' . $p->criterion_col_id);
+            ->keyBy(fn($p) => $p->criteria_row_id . '_' . $p->criteria_col_id);
 
         return view('ahp.index', compact('criteria', 'pairs'));
     }
 
     public function storeComparisons(Request $request)
     {
-        $criteria = Criteria::where('is_active', true)->orderBy('code')->get();
+        $criteria = Criteria::orderBy('Code')->get();
 
         foreach ($criteria as $row) {
             foreach ($criteria as $col) {
                 if ($row->id === $col->id) {
-                    // diagonal ⇒ tidak perlu disimpan (anggap 1)
                     continue;
                 }
 
@@ -50,8 +48,8 @@ class AHPController extends Controller
 
                 criteria_pairwise::updateOrCreate(
                     [
-                        'criterion_row_id' => $row->id,
-                        'criterion_col_id' => $col->id,
+                        'criteria_row_id' => $row->id,
+                        'criteria_col_id' => $col->id,
                     ],
                     ['value' => $value]
                 );
@@ -63,7 +61,7 @@ class AHPController extends Controller
 
     public function calculate()
     {
-        $criteria = criteria::where('is_active', true)->orderBy('code')->get();
+        $criteria = Criteria::orderBy('Code')->get();
 
         if ($criteria->isEmpty()) {
             return redirect()->route('ahp.index')->with('error', 'No active criteria.');
@@ -74,7 +72,7 @@ class AHPController extends Controller
         // Simpan bobot ke tabel criteria
         foreach ($criteria as $criterion) {
             if (isset($result['weights'][$criterion->id])) {
-                $criterion->weight = $result['weights'][$criterion->id];
+                $criterion->Weight = $result['weights'][$criterion->id];
                 $criterion->save();
             }
         }

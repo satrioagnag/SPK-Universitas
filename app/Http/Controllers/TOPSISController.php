@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\calculation_run;
-use app\models\criteria;
-use app\Models\Topsis_result;
-use app\models\alternatif;
-use app\services\TOPSISService;
+use App\Models\calculation_Run;
+use App\Models\Criteria;
+use App\Models\topsis_result;
+use App\Models\Alternatif;
+use App\Services\TOPSISService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TOPSISController extends Controller
 {
-    protected TopsisService $topsis;
+    protected TOPSISService $topsis;
 
-    public function __construct(TopsisService $topsis)
+    public function __construct(TOPSISService $topsis)
     {
         $this->topsis = $topsis;
     }
@@ -22,15 +22,15 @@ class TOPSISController extends Controller
     public function index()
     {
         // Ambil run terakhir (kalau ada)
-        $lastRun = CalculationRun::where('method', 'topsis')
+        $lastRun = calculation_Run::where('method', 'topsis')
             ->latest('run_at')
             ->first();
 
         $results = collect();
 
         if ($lastRun) {
-            $results = TopsisResult::with('university')
-                ->where('calculation_run_id', $lastRun->id)
+            $results = topsis_result::with('alternative')
+                ->where('calculation__run_id', $lastRun->id)
                 ->orderBy('rank')
                 ->get();
         }
@@ -40,8 +40,7 @@ class TOPSISController extends Controller
 
     public function calculate()
     {
-        $criteria = Criterion::where('is_active', true)
-            ->whereNotNull('weight')
+        $criteria = Criteria::whereNotNull('Weight')
             ->get();
 
         if ($criteria->isEmpty()) {
@@ -49,14 +48,14 @@ class TOPSISController extends Controller
                 ->with('error', 'No criteria with weights. Run AHP first.');
         }
 
-        $universities = University::orderBy('code')->get();
+        $alternatives = Alternatif::orderBy('Code')->get();
 
-        if ($universities->isEmpty()) {
+        if ($alternatives->isEmpty()) {
             return redirect()->route('topsis.index')
-                ->with('error', 'No universities to evaluate.');
+                ->with('error', 'No alternatives to evaluate.');
         }
 
-        $results = $this->topsis->calculate($universities, $criteria);
+        $results = $this->topsis->calculate($alternatives, $criteria);
 
         if (empty($results)) {
             return redirect()->route('topsis.index')
@@ -64,18 +63,18 @@ class TOPSISController extends Controller
         }
 
         DB::transaction(function () use ($results) {
-            $run = CalculationRun::create([
+            $run = calculation_Run::create([
                 'method' => 'topsis',
                 'note'   => 'Automatic run',
                 'run_at' => now(),
             ]);
 
-            foreach ($results as $universityId => $row) {
-                TopsisResult::create([
-                    'calculation_run_id' => $run->id,
-                    'university_id'      => $universityId,
-                    'score'              => $row['score'],
-                    'rank'               => $row['rank'],
+            foreach ($results as $alternativeId => $row) {
+                topsis_result::create([
+                    'calculation__run_id' => $run->id,
+                    'alternative_id' => $alternativeId,
+                    'score' => $row['score'],
+                    'rank' => $row['rank'],
                 ]);
             }
         });

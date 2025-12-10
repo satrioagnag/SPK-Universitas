@@ -2,23 +2,23 @@
 
 namespace App\Services;
 
-use App\Models\Criterion;
-use App\Models\University;
-use App\Models\UniversityScore;
+use App\Models\Criteria;
+use App\Models\Alternatif;
+use App\Models\alternatives_score;
 use Illuminate\Support\Collection;
 
-class TopsisService
+class TOPSISService
 {
     /**
-     * Hitung TOPSIS untuk kumpulan universitas & kriteria aktif.
+     * Hitung TOPSIS untuk kumpulan alternatif & kriteria aktif.
      *
-     * @param \Illuminate\Support\Collection<University> $universities
-     * @param \Illuminate\Support\Collection<Criterion>  $criteria
-     * @return array [university_id => ['score' => float, 'rank' => int, 'd_plus' => float, 'd_minus' => float], ...]
+     * @param \Illuminate\Support\Collection<Alternatif> $alternatives
+     * @param \Illuminate\Support\Collection<Criteria>  $criteria
+     * @return array [alternative_id => ['score' => float, 'rank' => int, 'd_plus' => float, 'd_minus' => float], ...]
      */
-    public function calculate(Collection $universities, Collection $criteria): array
+    public function calculate(Collection $alternatives, Collection $criteria): array
     {
-        $m = $universities->count();  // alternatif
+        $m = $alternatives->count();  // alternatif
         $n = $criteria->count();      // kriteria
 
         if ($m === 0 || $n === 0) {
@@ -26,36 +26,36 @@ class TopsisService
         }
 
         // indexing
-        $uIndexById = [];
-        $cIndexById = [];
+        $altIndexById = [];
+        $critIndexById = [];
         $i = 0;
-        foreach ($universities as $u) {
-            $uIndexById[$u->id] = $i++;
+        foreach ($alternatives as $alt) {
+            $altIndexById[$alt->id] = $i++;
         }
         $j = 0;
-        foreach ($criteria as $c) {
-            $cIndexById[$c->id] = $j++;
+        foreach ($criteria as $crit) {
+            $critIndexById[$crit->id] = $j++;
         }
 
         // build matrix X[i][j]
         $matrix = array_fill(0, $m, array_fill(0, $n, 0.0));
 
-        $scores = UniversityScore::whereIn('university_id', $universities->pluck('id'))
+        $scores = alternatives_score::whereIn('alternative_id', $alternatives->pluck('id'))
             ->whereIn('criterion_id', $criteria->pluck('id'))
             ->get();
 
         foreach ($scores as $score) {
-            $ui = $uIndexById[$score->university_id];
-            $cj = $cIndexById[$score->criterion_id];
-            $matrix[$ui][$cj] = (float) $score->value;
+            $ai = $altIndexById[$score->alternative_id];
+            $cj = $critIndexById[$score->criterion_id];
+            $matrix[$ai][$cj] = (float) $score->Score;
         }
 
         // weights and types
         $weights = [];
         $types   = [];
         foreach ($criteria as $c) {
-            $weights[] = (float) ($c->weight ?? 0);
-            $types[]   = $c->type; // 'benefit' / 'cost'
+            $weights[] = (float) ($c->Weight ?? 0);
+            $types[]   = $c->Type; // 'benefit' / 'cost'
         }
 
         // 1) normalisasi
@@ -113,12 +113,12 @@ class TopsisService
         // 5) skor & ranking
         $results = [];
         $i = 0;
-        foreach ($universities as $u) {
+        foreach ($alternatives as $alt) {
             $v = ($dPlus[$i] + $dMinus[$i]) == 0
                 ? 0
                 : $dMinus[$i] / ($dPlus[$i] + $dMinus[$i]);
 
-            $results[$u->id] = [
+            $results[$alt->id] = [
                 'score'   => $v,
                 'd_plus'  => $dPlus[$i],
                 'd_minus' => $dMinus[$i],
@@ -131,7 +131,7 @@ class TopsisService
         uasort($results, fn($a, $b) => $b['score'] <=> $a['score']);
 
         $rank = 1;
-        foreach ($results as $uid => &$row) {
+        foreach ($results as $altId => &$row) {
             $row['rank'] = $rank++;
         }
 

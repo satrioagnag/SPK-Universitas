@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class alternatives_score extends Model
 {
-    /** @use HasFactory<\Database\Factories\AlternativesScoreFactory> */
     use HasFactory;
 
     protected $table = 'alternatives_scores';
@@ -25,16 +24,16 @@ class alternatives_score extends Model
 
     public function alternative()
     {
-        return $this->belongsTo(Alternatif::class);
+        return $this->belongsTo(Alternatif::class, 'alternative_id');
     }
 
     public function criterion()
     {
-        return $this->belongsTo(Criteria::class);
+        return $this->belongsTo(Criteria::class, 'criterion_id');
     }
 
     public function subCriterion()
     {
-        return $this->belongsTo(sub_criteria::class);
+        return $this->belongsTo(sub_criterion::class, 'sub_criterion_id');
     }
 }

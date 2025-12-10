@@ -3,50 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Criteria;
-use App\Models\Alternative;
-use App\Models\AlternativeScore;
+use App\Models\Alternatif;
+use App\Models\alternatives_score;
 use Illuminate\Http\Request;
 
 class AlternativeScoreController extends Controller
 {
-    public function editbyAlternative(Alternative $Alternative){
-        $criteria = Criterion::where('is_active', true)->orderBy('code')->get();
+    public function editByAlternative(Alternatif $alternative)
+    {
+        $criteria = Criteria::orderBy('Code')->get();
 
         // Ambil nilai yang sudah ada
-        $scores = AlternativeScore::where('alternative_id', $Alternative->id)->get()
+        $scores = alternatives_score::where('alternative_id', $alternative->id)->get()
             ->keyBy('criterion_id');
 
         return view('scores.edit_by_alternative', compact('alternative', 'criteria', 'scores'));
     }
-    public function updateByAlternative(Request $request, Alternative $Alternative)
+
+    public function updateByAlternative(Request $request, Alternatif $alternative)
     {
-        $criteria = Criterion::where('is_active', true)->get();
+        $criteria = Criteria::all();
 
         foreach ($criteria as $criterion) {
             $value = $request->input("criteria.{$criterion->id}.value");
             $subId = $request->input("criteria.{$criterion->id}.sub_criterion_id");
 
-            if ($value === null) {
+            if ($value === null || $value === '') {
                 continue;
             }
 
-            UniversityScore::updateOrCreate(
+            alternatives_score::updateOrCreate(
                 [
-                    'alternative_id' => $Alternative->id,
+                    'alternative_id' => $alternative->id,
                     'criterion_id'  => $criterion->id,
                 ],
                 [
                     'sub_criterion_id' => $subId ?: null,
-                    'value'            => $value,
+                    'Score' => $value,
                 ]
             );
         }
 
         return redirect()
-            ->route('alternative.index')
-            ->with('success', 'Scores updated for ' . $Alternative->name);
+            ->route('alternatives.index')
+            ->with('success', 'Scores updated for ' . $alternative->Name);
     }
-
-    //Catatan: form di view harus kirim data seperti:
-//criteria[ID_KRITERIA][value] dan criteria[ID_KRITERIA][sub_criterion_id].
 }

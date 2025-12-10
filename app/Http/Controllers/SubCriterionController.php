@@ -2,93 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use app\models\criteria;
-use app\Models\Sub_Criterion;
+use App\Models\Criteria;
+use App\Models\sub_criterion;
 use Illuminate\Http\Request;
 
 class SubCriterionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Criteria $criteria)
     {
-        $subCriteria = $criterion->subCriteria()->orderBy('score', 'desc')->get();
+        $criterion = $criteria; // Alias for view consistency
+        $subCriteria = $criteria->subCriteria()->orderBy('Score', 'desc')->get();
         return view('sub_criteria.index', compact('criterion', 'subCriteria'));
-    }    
-    
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('sub_criteria.create', compact('criterion'));
-
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function create(Criteria $criteria)
+    {
+        $criterion = $criteria; // Alias for view consistency
+        return view('sub_criteria.create', compact('criterion'));
+    }
+
+    public function store(Request $request, Criteria $criteria)
     {
         $data = $request->validate([
             'label' => 'required|max:255',
             'score' => 'required|numeric',
         ]);
 
-        $data['criteria_id'] = $criterion->id;
-
-        Sub_Criterion::create($data);
+        sub_criterion::create([
+            'criteria_id' => $criteria->id,
+            'label' => $data['label'],
+            'Score' => $data['score'],
+        ]);
 
         return redirect()
-            ->route('criteria.sub_criteria.index', $criterion->id)
+            ->route('criteria.sub_criteria.index', $criteria->id)
             ->with('success', 'Sub-criterion created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(sub_criterion $sub_criterion)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
+        $subCriterion = $sub_criterion; // Alias for view consistency
+        $criterion = $sub_criterion->criterion;
         return view('sub_criteria.edit', compact('criterion', 'subCriterion'));
-
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, sub_criterion $sub_criterion)
     {
         $data = $request->validate([
             'label' => 'required|max:255',
             'score' => 'required|numeric',
         ]);
 
-        $subCriterion->update($data);
+        $sub_criterion->update([
+            'label' => $data['label'],
+            'Score' => $data['score'],
+        ]);
 
         return redirect()
-            ->route('criteria.sub_criteria.index', $criterion->id)
+            ->route('criteria.sub_criteria.index', $sub_criterion->criteria_id)
             ->with('success', 'Sub-criterion updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(sub_criterion $sub_criterion)
     {
-        $subCriterion->delete();
+        $criteriaId = $sub_criterion->criteria_id;
+        $sub_criterion->delete();
 
         return redirect()
-            ->route('criteria.sub_criteria.index', $criterion->id)
+            ->route('criteria.sub_criteria.index', $criteriaId)
             ->with('success', 'Sub-criterion deleted successfully.');
     }
 }

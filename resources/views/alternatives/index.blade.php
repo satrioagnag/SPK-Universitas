@@ -33,7 +33,7 @@
                             <td>{{ $alternative->Code }}</td>
                             <td>{{ $alternative->Name }}</td>
                             <td>
-                                <a href="{{ route('alternatives.scores.editbyAlternative', $alternative->id) }}" 
+                                <a href="{{ route('alternatives.scores.edit', $alternative->id) }}" 
                                    class="btn btn-info btn-sm" title="Input Nilai">
                                     <i class="fas fa-star"></i>
                                 </a>

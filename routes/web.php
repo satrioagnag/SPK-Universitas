@@ -1,17 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AHPController;
 use App\Http\Controllers\AlternativeScoreController;
 use App\Http\Controllers\AlternativeController;
-use App\http\Controllers\CriterionController;
-use App\http\Controllers\DashboardController;
-use App\http\Controllers\SubCriterionController;
-use App\http\Controllers\topsisController;
-use App\http\Controllers\user;
-use App\services\AHPService;
-use App\services\TopsisService;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CriterionController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SubCriterionController;
+use App\Http\Controllers\TOPSISController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -19,36 +15,40 @@ Route::get('/', function () {
 
 Route::group([], function () {
 
-    route::get('/dashboard', [DashboardController::class, 'index'])
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    route::resource('alternatives', AlternativeController::class)
+    // Alternatives Routes
+    Route::resource('alternatives', AlternativeController::class)
         ->except(['show']);
 
-    route::resource('criteria', CriterionController::class)
+    // Criteria Routes
+    Route::resource('criteria', CriterionController::class)
         ->except(['show']);
 
-    route::resource('criteria.sub_criteria', SubCriterionController::class)
+    // Sub-Criteria Routes (nested under criteria)
+    Route::resource('criteria.sub_criteria', SubCriterionController::class)
         ->shallow()
         ->except(['show']);
 
-    route::get('alternatives/{alternative}/edit', [AlternativeScoreController::class, 'editbyAlternative'])
-        ->name('alternatives.scores.editbyAlternative');
-    route::put('alternatives/{alternative}/edit', [AlternativeScoreController::class, 'updatebyAlternative'])
-        ->name('alternatives.scores.updatebyAlternative');
+    // Alternative Scores Routes
+    Route::get('alternatives/{alternative}/scores', [AlternativeScoreController::class, 'editByAlternative'])
+        ->name('alternatives.scores.edit');
+    Route::put('alternatives/{alternative}/scores', [AlternativeScoreController::class, 'updateByAlternative'])
+        ->name('alternatives.scores.update');
 
-    route::get('ahp', [AHPController::class, 'index'])
+    // AHP Routes
+    Route::get('ahp', [AHPController::class, 'index'])
         ->name('ahp.index');
-    route::post('ahp/comparisons', [AHPController::class, 'storeComparisons'])
+    Route::post('ahp/comparisons', [AHPController::class, 'storeComparisons'])
         ->name('ahp.storeComparisons');
-    route::post('ahp/calculate', [AHPController::class, 'calculate'])
+    Route::post('ahp/calculate', [AHPController::class, 'calculate'])
         ->name('ahp.calculate');
 
-    route::get('topsis', [TopsisController::class, 'index'])
+    // TOPSIS Routes
+    Route::get('topsis', [TOPSISController::class, 'index'])
         ->name('topsis.index');
-    route::post('topsis/calculate', [TopsisController::class, 'calculate'])
+    Route::post('topsis/calculate', [TOPSISController::class, 'calculate'])
         ->name('topsis.calculate');
 
 });
-
-
